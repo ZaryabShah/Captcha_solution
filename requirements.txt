@@ -1,0 +1,4 @@
+substrate-interface
+raducord==1.0.4
+cryptography
+mnemonic
