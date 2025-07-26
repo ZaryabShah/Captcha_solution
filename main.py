@@ -176,7 +176,7 @@ if __name__ == "__main__":
             headers=headers,
             json=payload
         )
-
+        print(response.json())
         provider_challenge = response.json()["signature"]["provider"]["challenge"]
         timestamp = response.json()["timestamp"]
         difficulty = response.json()["difficulty"]

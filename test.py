@@ -1,82 +1,42 @@
-def generate_captcha_response(
-    base_url,
-    challenge_str,
-    dapp_address,
-    user_address,
-    difficulty,
-    nonce,
-    provider_challenge,
-    user_timestamp
-):
-    # Fixed components
-    header = bytes.fromhex("0001")
-    url = base_url.encode('utf-8')
-    url_length = bytes.fromhex("6c")  # Fixed length byte
-    dapp_tag = bytes.fromhex("c0")
-    user_tag = bytes.fromhex("c0")
-    challenge_meta = bytes.fromhex("01f101")
-    nonce_separator = bytes.fromhex("01")
-    provider_header = bytes.fromhex("010902")
-    user_header = bytes.fromhex("00010902")
-    terminator = bytes.fromhex("00")
-    
-    # Convert dynamic values to bytes
-    dapp_bytes = dapp_address.encode('utf-8')
-    user_bytes = user_address.encode('utf-8')
-    challenge_bytes = challenge_str.encode('utf-8')
-    nonce_bytes = nonce.to_bytes(4, 'little')  # Little-endian format
-    difficulty_byte = str(difficulty).encode('utf-8')
-    provider_challenge_bytes = provider_challenge.encode('utf-8')
-    user_timestamp_bytes = user_timestamp.encode('utf-8')
-    timestamp_part = challenge_str.split('___')[0].encode('utf-8')
-    
-    # Construct the response
-    response = (
-        header +
-        url_length +
-        url +
-        dapp_tag +
-        dapp_bytes +
-        user_tag +
-        user_bytes +
-        challenge_meta +
-        challenge_bytes +
-        nonce_separator +
-        nonce_bytes +
-        difficulty_byte +
-        timestamp_part +
-        provider_header +
-        provider_challenge_bytes +
-        user_header +
-        user_timestamp_bytes +
-        terminator
-    )
-    
-    return response.hex()
+# pip install -U curl_cffi
 
-# ===== CONFIGURATION - MODIFY THESE VALUES =====
-base_url = "https://pronode4.prosopo.io"  # CHANGED FROM pronode4 to pronode6
-challenge = "1752673332173___5GhQCYozgiHSBYLzzBa7DuvjVhAzUDXLRiVz58zrhLJfKtmN___5EZVvsHMrKCFKp5NYNoTyDjTjetoVo1Z4UNNbTwJf1GfN6Xm___472858"
-dapp = "5EZVvsHMrKCFKp5NYNoTyDjTjetoVo1Z4UNNbTwJf1GfN6Xm"
-user = "5GhQCYozgiHSBYLzzBa7DuvjVhAzUDXLRiVz58zrhLJfKtmN"
-difficulty_value = 4
-nonce_value = 356629
-provider_sig = "0x5e7fee0e1fbd93fdba0ade2082f261e06fdb7217009ca5bc2f81af2e9b5e2f7421f7651cf69d41c9cb89b6505d3c352a39425744cbd4c2e73f71ae4e4746a785"
-user_ts = "0x7e552aa9e097031f3c2f2df02314d5f77055a23496cc59234acc76a3e56e9b0684d06bb8c301e843ff79a4209c5d9b140fddd99e1abd5cc50dfeb1f303517288"
-# ===== END OF CONFIGURATION =====
+from curl_cffi import requests
 
-# Generate the response
-captcha_response = generate_captcha_response(
-    base_url=base_url,
-    challenge_str=challenge,
-    dapp_address=dapp,
-    user_address=user,
-    difficulty=difficulty_value,
-    nonce=nonce_value,
-    provider_challenge=provider_sig,
-    user_timestamp=user_ts
-)
+url = "https://pronode13.prosopo.io/v1/prosopo/provider/client/captcha/frictionless"
 
-# Output the result
-print("Generated Captcha Response:")
-print(captcha_response)
+payload = {
+    "token": "Dq+bHUy/HFCEEdUbxO5Ik/CcAhhw3O/Hd6mpIO7hyXjdl6PC5Zak+2xfg8WgqX1GELogEiV6dhAjBlvk3yOUNbEcsmTfbDuDDwmljqV8KzYoqHnTZH0rQOUAxjB2ppEb29XJcGDpOubzXVphluciGKj371VIMNoQywY2Nrtf8zGcNCqRzyEm2MgKJArzf/3LUf0x7C3MFmTYZz0E+jBJKWdU+yFUupRWzMoA5ubJeJuvVbZnBAic8yPfzL6NvIhV8gry0mqNuPjGCakDMRN72B1TglMaOvPeqy3RX94fo54zUXfuxIThj6H2ts8U+Z1Algk3Kt/Kbvf9OEwPMrWpNg==",
+    "dapp":  "5EZVvsHMrKCFKp5NYNoTyDjTjetoVo1Z4UNNbTwJf1GfN6Xm",
+    "user":  "5HdegZTcyjtWdtnn1XSqrdSdhex64nY3ZEKzquQ9sL7Virvd",
+}
+
+headers = {
+    "accept": "*/*",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "en-US,en;q=0.9",
+    "cache-control": "no-cache",
+    "content-type": "application/json",
+    "origin": "https://www.twickets.live",
+    "pragma": "no-cache",
+    "prosopo-site-key": "5EZVvsHMrKCFKp5NYNoTyDjTjetoVo1Z4UNNbTwJf1GfN6Xm",
+    "prosopo-user": "5HdegZTcyjtWdtnn1XSqrdSdhex64nY3ZEKzquQ9sL7Virvd",
+    "referer": "https://www.twickets.live/",
+    "sec-ch-ua": "\"Not)A;Brand\";v=\"8\", \"Chromium\";v=\"138\", \"Google Chrome\";v=\"138\"",
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "sec-fetch-dest": "empty",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "cross-site",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit(537.36) "
+                  "(KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
+}
+
+# Some curl_cffi versions may not support "chrome138" yet. If you get an error,
+# change to impersonate="chrome" (generic) or a nearby version like "chrome127".
+with requests.Session(impersonate="chrome138") as s:
+    resp = s.post(url, json=payload, headers=headers, timeout=30)
+    print("Status:", resp.status_code)
+    try:
+        print(resp.json())
+    except Exception:
+        print(resp.text)
